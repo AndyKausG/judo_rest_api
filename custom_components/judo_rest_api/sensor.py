@@ -54,5 +54,5 @@ async def async_setup_entry(
 
     async_add_entities(
         entries,
-        update_before_add=True,
+        update_before_add=False,
     )
