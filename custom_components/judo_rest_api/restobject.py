@@ -102,14 +102,20 @@ class RestAPI:
                 log.debug("Content %s", str(res["data"]))
                 return res["data"]
             else:
-                log.warning("Content ignored for API return status %s", str(status))
+                log.warning(
+                    "Content ignored for API call %s, return status %s",
+                    command,
+                    str(status),
+                )
                 return None
-        except Exception:
+        except Exception as err:
             if response is not None:
                 status = str(response.status_code)
             else:
                 status = "unknown status"
-            log.warning("Judo REST API call failed with %s", status)
+            log.warning(
+                "Judo REST API call %s failed with %s: %r", command, status, err
+            )
             return None
 
     async def set_rest(self, command: str, towrite: str):
