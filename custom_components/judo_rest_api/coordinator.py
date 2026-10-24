@@ -119,6 +119,13 @@ class MyCoordinator(DataUpdateCoordinator):
             raise UpdateFailed(
                 "Judo Water treatment not reachable"
             )
+        # drop commands the device type does not support; some command codes
+        # have a different (writing) meaning on other device types
+        devicetype = self._rest_api.get_devicetype()
+        self._restitems = [
+            item for item in self._restitems if item.supports(devicetype)
+        ]
+        self._number_of_items = len(self._restitems)
         await self._cache_device_info()
 
     async def fetch_data(self, idx=None):
@@ -162,6 +169,11 @@ class MyCoordinator(DataUpdateCoordinator):
             # mark entities unavailable instead of silently keeping stale values
             raise UpdateFailed("No data received from Judo Water treatment")
         await self._cache_device_info()
+
+    @property
+    def rest_items(self) -> list[RestItem]:
+        """Return the rest items supported by the device."""
+        return self._restitems
 
     @property
     def rest_api(self):
